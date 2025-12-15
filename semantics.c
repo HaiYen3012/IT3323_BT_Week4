@@ -26,43 +26,81 @@ Object* lookupObject(char *name) {
   return NULL;
 }
 
-
 void checkFreshIdent(char *name) {
   if (findObject(symtab->currentScope->objList, name) != NULL)
     error(ERR_DUPLICATE_IDENT, currentToken->lineNo, currentToken->colNo);
 }
+
 Object* checkDeclaredIdent(char* name) {
-  // TODO
+  Object* obj = lookupObject(name);
+  if (obj == NULL)
+    error(ERR_UNDECLARED_IDENT, currentToken->lineNo, currentToken->colNo);
+  return obj;
 }
 
 Object* checkDeclaredConstant(char* name) {
   Object* obj = lookupObject(name);
   if (obj == NULL)
-    error(ERR_UNDECLARED_CONSTANT,currentToken->lineNo, currentToken->colNo);
+    error(ERR_UNDECLARED_CONSTANT, currentToken->lineNo, currentToken->colNo);
   if (obj->kind != OBJ_CONSTANT)
-    error(ERR_INVALID_CONSTANT,currentToken->lineNo, currentToken->colNo);
-
+    error(ERR_INVALID_CONSTANT, currentToken->lineNo, currentToken->colNo);
   return obj;
 }
 
 Object* checkDeclaredType(char* name) {
   Object* obj = lookupObject(name);
   if (obj == NULL)
-    error(ERR_UNDECLARED_TYPE,currentToken->lineNo, currentToken->colNo);
+    error(ERR_UNDECLARED_TYPE, currentToken->lineNo, currentToken->colNo);
   if (obj->kind != OBJ_TYPE)
-    error(ERR_INVALID_TYPE,currentToken->lineNo, currentToken->colNo);
-
+    error(ERR_INVALID_TYPE, currentToken->lineNo, currentToken->colNo);
   return obj;
 }
+
 Object* checkDeclaredVariable(char* name) {
-  // TODO
+  Object* obj = lookupObject(name);
+  if (obj == NULL)
+    error(ERR_UNDECLARED_VARIABLE, currentToken->lineNo, currentToken->colNo);
+  if (obj->kind != OBJ_VARIABLE && obj->kind != OBJ_PARAMETER)
+    error(ERR_INVALID_VARIABLE, currentToken->lineNo, currentToken->colNo);
+  return obj;
+}
+
+Object* checkDeclaredFunction(char* name) {
+  Object* obj = lookupObject(name);
+  if (obj == NULL)
+    error(ERR_UNDECLARED_IDENT, currentToken->lineNo, currentToken->colNo);
+  if (obj->kind != OBJ_FUNCTION)
+    error(ERR_INVALID_FUNCTION, currentToken->lineNo, currentToken->colNo);
+  return obj;
 }
 
 Object* checkDeclaredProcedure(char* name) {
-  // TODO
+  Object* obj = lookupObject(name);
+  if (obj == NULL)
+    error(ERR_UNDECLARED_PROCEDURE, currentToken->lineNo, currentToken->colNo);
+  if (obj->kind != OBJ_PROCEDURE)
+    error(ERR_INVALID_PROCEDURE, currentToken->lineNo, currentToken->colNo);
+  return obj;
 }
 
 Object* checkDeclaredLValueIdent(char* name) {
-  // TODO
+  Object* obj = lookupObject(name);
+  if (obj == NULL)
+    error(ERR_UNDECLARED_IDENT, currentToken->lineNo, currentToken->colNo);
+  
+  switch (obj->kind) {
+    case OBJ_VARIABLE:
+    case OBJ_PARAMETER:
+      return obj;
+    case OBJ_FUNCTION:
+      // Kiểm tra xem có phải là hàm hiện tại không
+      if (obj == symtab->currentScope->owner)
+        return obj;
+      else
+        error(ERR_INVALID_RETURN, currentToken->lineNo, currentToken->colNo);
+      break;
+    default:
+      error(ERR_INVALID_LVALUE, currentToken->lineNo, currentToken->colNo);
+  }
+  return obj;
 }
-

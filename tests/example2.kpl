@@ -11,6 +11,6 @@ BEGIN
   FOR N := 1 TO 7 DO
     BEGIN
       CALL WRITELN;
-      CALL WRITEI(F(n));
+      CALL WRITEI(F(N));
     END;
 END. (* Factorial *)
