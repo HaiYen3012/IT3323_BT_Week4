@@ -1,0 +1,6 @@
+PROGRAM TEST12;
+TYPE MyType = INTEGER;
+VAR S : INTEGER;
+BEGIN
+  S := MyType + 1;
+END.

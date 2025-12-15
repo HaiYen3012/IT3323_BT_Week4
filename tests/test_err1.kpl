@@ -1,0 +1,5 @@
+PROGRAM TEST1;
+VAR I : INTEGER;
+BEGIN
+  I := X + 1;
+END.
